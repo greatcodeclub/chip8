@@ -9,19 +9,18 @@ VM.prototype.reset = function() {
 
   this.V = new Uint8Array(new ArrayBuffer(16)) // Vx: 16 general purpose 8-bit registers
   this.I = 0 // I: 16-bit register, for storing addresses
-  this.stack = [] // The call stack
 
-  this.pc = 0x200 // Instruction pointer. Programs start at address 0x200 in memory
+  // Program counter. Address of the next instruction the VM will execute.
+  // Programs start at address 0x200 in memory.
+  this.pc = 0x200
 }
 
 VM.prototype.loadProgram = function(program) {
   this.reset()
 
   // Load program in memory
-  var index = 0
-  while (index < program.length) {
-    this.memory[0x200 + index] = program[index]
-    index += 1
+  for (var i = 0; i < program.length; i++) {
+    this.memory[0x200 + i] = program[i]
   }
 }
 
@@ -41,12 +40,6 @@ VM.prototype.step = function() {
       // Jump to location nnn.
       this.pc = instruction & 0x0fff
       break
-    case 0x2000:
-      // 2nnn - CALL addr
-      // Call subroutine at nnn.
-      this.stack.push(this.pc)
-      this.pc = instruction & 0x0fff
-      break
     case 0x3000:
       // 3xkk - SE Vx, byte
       // Skip next instruction if Vx = kk.
@@ -64,17 +57,6 @@ VM.prototype.step = function() {
       // Set Vx = Vx + kk.
       this.V[x] = this.V[x] + (instruction & 0xff) & 0xff
       break
-    case 0x8000:
-      switch (instruction & 0x000f) {
-        case 0x0000:
-          // 8xy0 - LD Vx, Vy
-          // Stores register Vy in Vx
-          this.V[x] = this.V[y]
-          break
-        default:
-          throw new Error("Unsupported instruction " + hex(instruction, 4))
-      }
-      break
     case 0xa000:
       // Annn - LD I, addr
       // Set I = nnn.
@@ -89,19 +71,28 @@ VM.prototype.step = function() {
       // Dxyn - DRW Vx, Vy, nibble
       // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 
+      // Eg., 0 is representer like so
+      //        Binary
+      // ****  11110000
+      // *  *  10010000
+      // *  *  10010000
+      // *  *  10010000
+      // ****  11110000
+
       this.V[0xf] = 0
 
       var n = instruction & 0x000F
 
-      for (var sy = 0; sy < n; sy++) {          // walk the horizontal lines (Y)
-        var line = this.memory[this.I + sy]     // get the sprite line to draw
-        for (var sx = 0; sx < 8; sx++) {        // walk the bits on the line (X)
-          if ((line & 0x80) > 0) { // ????
-            if (this.display.setPixel(this.V[x] + sx, this.V[y] + sy)) {
-              this.V[0xf] = 1                   // the pixel was erased
+      for (var line = 0; line < n; line++) {      // Walk the horizontal lines (Y)
+        var bits = this.memory[this.I + line]     // Get the sprite line bits to draw
+        for (var bit = 7; bit >= 0; bit--) {      // Walk the bits on the line (X),
+                                                  // starting from first bit (right).
+          if (bits & 1) {                         // Check the first bit only
+            if (this.display.setPixel(this.V[x] + bit, this.V[y] + line)) {
+              this.V[0xf] = 1                     // The pixel was erased
             }
           }
-          line <<= 1                            // advance one bit in line
+          bits >>= 1                              // Move forward one bit
         }
       }
 

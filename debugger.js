@@ -70,22 +70,12 @@ Debugger.prototype.disassemble = function(instruction) {
   switch (instruction & 0xf000) {
     case 0x1000:
       return ["1nnn - JP addr", "Jump to location nnn"]
-    case 0x2000:
-      return ["2nnn - CALL addr", "Call subroutine at nnn"]
     case 0x3000:
       return ["3xkk - SE Vx, byte", "Skip next instruction if Vx = kk"]
     case 0x6000:
       return ["6xkk - LD Vx, byte", "Set Vx = kk"]
     case 0x7000:
       return ["7xkk - ADD Vx, byte", "Set Vx = Vx + kk"]
-    case 0x8000:
-      switch (instruction & 0x000f) {
-        case 0x0000:
-          return ["8xy0 - LD Vx, Vy", "Loads register Vy in Vx"]
-        default:
-          return ["???"]
-      }
-      break
     case 0xa000:
       return ["Annn - LD I, addr", "Set I = nnn"]
     case 0xc000:
