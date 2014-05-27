@@ -7,11 +7,11 @@
 
   <style>
     #memory, #registers {
-      font-size: 11px;
+      font-size: 12px;
       font-family: monospace;
     }
     h2 {
-      font-size: 14px;
+      font-size: 16px;
       margin: 0;
     }
     .col {
@@ -35,12 +35,24 @@
   <div id="debugger" style="display:none">
     <div class="col">
       <h2>Memory</h2>
-      <table id="memory"><tbody></tbody></table>
+      <table id="memory">
+        <thead>
+          <tr>
+            <th>Address</th>
+            <th>Instruction</th>
+            <th>Assembly</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
 
     <div class="col">
       <h2>Registers</h2>
-      <table id="registers"><tbody></tbody></table>
+      <table id="registers">
+        <tbody></tbody>
+      </table>
     </div>    
   </div>
 

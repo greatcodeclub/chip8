@@ -62,87 +62,17 @@ VM.prototype.step = function() {
     case 0x7000:
       // 7xkk - ADD Vx, byte
       // Set Vx = Vx + kk.
-      var val = (instruction & 0xFF) + this.V[x]
-
-      if (val > 255) {
-        val -= 256
-      }
-
-      this.V[x] = val
+      this.V[x] = this.V[x] + (instruction & 0xff) & 0xff
       break
     case 0x8000:
       switch (instruction & 0x000f) {
-        // LD Vx, Vy
-        // 8xy0
-        // Stores register Vy in Vx
         case 0x0000:
+          // 8xy0 - LD Vx, Vy
+          // Stores register Vy in Vx
           this.V[x] = this.V[y]
           break
-        // OR Vx, Vy
-        // 8xu1
-        // Set vX equal to vX OR Vy
-        case 0x0001:
-          this.V[x] |= this.V[y]
-          break
-        // AND Vx, Vy
-        // 8xy2
-        // Set Vx equal to Vx AMD Vy
-        case 0x0002:
-          this.V[x] &= this.V[y]
-          break
-        // XOR Vx, Vy
-        // 8xy3
-        // Set Vx equal to Vx XOR Vy.
-        case 0x0003:
-          this.V[x] ^= this.V[y]
-          break
-        // ADD Vx, Vy
-        // 8xy4
-        // Set Vx equal to Vx + Vy, set Vf equal to carry.
-        case 0x0004:
-          this.V[x] += this.V[y]
-          this.V[0xF] = +(this.V[x] > 255)
-          if (this.V[x] > 255) {
-            this.V[x] -= 256
-          }
-          break
-        // SUB Vx, Vy
-        // 8xy5
-        // Set Vx equal to Vx - Vy, set Vf equal to NOT borrow.
-        case 0x0005:
-          this.V[0xF] = +(this.V[x] > this.V[y])
-          this.V[x] -= this.V[y]
-          if (this.V[x] < 0) {
-            this.V[x] += 256
-          }
-          break
-        // SHR Vx, Vy
-        // 8xy6
-        // Set Vx SHR 1.
-        case 0x0006:
-          this.V[0xF] = this.V[x] & 0x1
-          this.V[x] >>= 1
-          break
-        // SUBN Vx, Vy
-        // 8xy7
-        // Set Vx equal to Vy - Vx, set Vf equal to NOT borrow.
-        case 0x0007:
-          this.V[0xF] = +(this.V[y] > this.V[x])
-          this.V[x] = this.V[y] - this.V[x]
-          if (this.V[x] < 0) {
-            this.V[x] += 256
-          }
-          break
-        // SHL Vx, Vy
-        // 8xyE
-        // Set Vx equal to Vx SHL 1.
-        case 0x000E:
-          this.V[0xF] = +(this.V[x] & 0x80)
-          this.V[x] <<= 1
-          if (this.V[x] > 255) {
-            this.V[x] -= 256
-          }
-          break
+        default:
+          throw new Error("Unsupported instruction " + hex(instruction, 4))
       }
       break
     case 0xa000:
@@ -162,7 +92,6 @@ VM.prototype.step = function() {
       this.V[0xf] = 0
 
       var n = instruction & 0x000F
-      console.log('draw', this.I)
 
       for (var sy = 0; sy < n; sy++) {          // walk the horizontal lines (Y)
         var line = this.memory[this.I + sy]     // get the sprite line to draw
@@ -178,7 +107,7 @@ VM.prototype.step = function() {
 
       break
     default:
-      throw new Error("Unsupported instruction", hex(instruction, 4))
+      throw new Error("Unsupported instruction" + hex(instruction, 4))
   }
 }
 

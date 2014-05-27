@@ -81,23 +81,7 @@ Debugger.prototype.disassemble = function(instruction) {
     case 0x8000:
       switch (instruction & 0x000f) {
         case 0x0000:
-          return ["8xy0 - LD Vx, Vy", "Stores register Vy in Vx"]
-        case 0x0001:
-          return ["8xu1 - OR Vx, Vy", "Set vX equal to vX OR Vy"]
-        case 0x0002:
-          return ["8xy2 - AND Vx, Vy", "Set Vx equal to Vx AMD Vy"]
-        case 0x0003:
-          return ["8xy3 - XOR Vx, Vy", "Set Vx equal to Vx XOR Vy"]
-        case 0x0004:
-          return ["8xy4 - ADD Vx, Vy", "Set Vx equal to Vx + Vy, set Vf equal to carry"]
-        case 0x0005:
-          return ["8xy5 - SUB Vx, Vy", "Set Vx equal to Vx - Vy, set Vf equal to NOT borrow."]
-        case 0x0006:
-          return ["8xy6 - SHR Vx, Vy", "Set Vx SHR 1"]
-        case 0x0007:
-          return ["8xy7 - SUBN Vx, Vy", "Set Vx equal to Vy - Vx, set Vf equal to NOT borrow"]
-        case 0x000E:
-          return ["8xyE - SHL Vx, Vy", "Set Vx equal to Vx SHL 1"]
+          return ["8xy0 - LD Vx, Vy", "Loads register Vy in Vx"]
         default:
           return ["???"]
       }
