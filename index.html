@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">        
+  <title>Chip-8 VM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    #memory, #registers {
+      font-size: 11px;
+      font-family: monospace;
+    }
+    h2 {
+      font-size: 14px;
+      margin: 0;
+    }
+    .col {
+      float: left;
+      margin-right: 20px;
+    }
+    .pc {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" tabindex="1" width="640" height="320"></canvas>
+  <div class="commands">
+    <button id="run">Run</button>
+    <button id="stop">Stop</button>
+    <button id="step">Step</button>
+    <button id="debug">Debug</button>
+  </div>
+
+  <div id="debugger" style="display:none">
+    <div class="col">
+      <h2>Memory</h2>
+      <table id="memory"><tbody></tbody></table>
+    </div>
+
+    <div class="col">
+      <h2>Registers</h2>
+      <table id="registers"><tbody></tbody></table>
+    </div>    
+  </div>
+
+  <script src="vendor/jquery.js"></script>
+  <script src="vendor/underscore.js"></script>
+  <script src="utils.js"></script>
+  <script src="vm.js"></script>
+  <script src="display.js"></script>
+  <script src="debugger.js"></script>
+  <script>
+    var display = new Display($("canvas")[0])
+    var vm = new VM(display)
+
+    loadROM("MAZE", function(program) {
+      vm.loadProgram(program)
+    })
+
+    $("#run").click(function() {
+      vm.run()
+    })
+    $("#stop").click(function() {
+      vm.stop()
+    })
+    $("#step").click(function() {
+      vm.step()
+    })
+    $("#debug").click(function() {
+      vm.debugger = new Debugger(vm)
+      $("#debugger").show()
+      vm.debugger.debug()
+    })
+
+    // Load ROM
+    function loadROM(name, callback) {
+      var xhr = new XMLHttpRequest()
+      xhr.open("GET", "roms/" + name, true)
+      xhr.responseType = "arraybuffer"
+
+      xhr.onload = function () {
+        callback(new Uint8Array(xhr.response))
+      }
+
+      xhr.send()
+    }
+  </script>
+</body>
+</html>
