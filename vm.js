@@ -3,14 +3,14 @@ function VM(display) {
 
   // CPU speed (in Hertz). Number of cycles per second.
   this.cpuSpeed = 60 // Hz
-}
 
-VM.prototype.reset = function() {
-  // Init 4KB of memory.
+  // Initialize 4KB of memory.
   // See doc for typed arrays in JavaScript:
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
   this.memory = new Uint8Array(new ArrayBuffer(4095))
+}
 
+VM.prototype.reset = function() {
   // Registers
   this.V = new Uint8Array(new ArrayBuffer(16)) // Vx: 16 general purpose 8-bit registers
   this.I = 0 // I: 16-bit register, for storing addresses
@@ -87,7 +87,7 @@ VM.prototype.step = function() {
       this.V[0xF] = collision ? 1 : 0
       break
     default:
-      throw new Error("Unsupported instruction" + hex(instruction, 4))
+      throw new Error("Unsupported instruction at 0x" + hex(this.pc, 3) + ": " + hex(instruction, 4))
   }
 }
 
@@ -95,6 +95,7 @@ VM.prototype.run = function() {
   var interval = 1000 / this.cpuSpeed
   var self = this
 
+  this.stop()
   this.timer = setInterval(function() {
     self.step()
   }, interval)

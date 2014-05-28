@@ -31,6 +31,7 @@
   <div class="commands">
     <button id="run">Run</button>
     <button id="stop">Stop</button>
+    <button id="reset">Reset</button>
     <button id="step">Step</button>
     <button id="debug">Debug</button>
   </div>
@@ -68,6 +69,7 @@
   <script>
     var display = new Display($("canvas")[0])
     var vm = new VM(display)
+    vm.debugger = new Debugger(vm)
 
     loadROM("MAZE", function(program) {
       vm.loadProgram(program)
@@ -76,6 +78,9 @@
     $("#run").click(function() {
       vm.run()
     })
+    $("#reset").click(function() {
+      vm.reset()
+    })
     $("#stop").click(function() {
       vm.stop()
     })
@@ -83,7 +88,6 @@
       vm.step()
     })
     $("#debug").click(function() {
-      vm.debugger = new Debugger(vm)
       $("#debugger").show()
       vm.debugger.debug()
     })

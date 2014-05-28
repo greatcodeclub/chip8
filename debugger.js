@@ -72,6 +72,7 @@ Debugger.prototype.debug = function() {
   this.dumpMemory()
   this.initRegisters()
 
+  this.stop()
   this.timer = setInterval(function() {
     self.update()
   }, 1000 / 60)
