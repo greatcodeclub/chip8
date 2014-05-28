@@ -1,4 +1,4 @@
-// A display of 64x32 scalled to the canvas dimensions.
+// A display of 64x32 pixels scaled to the canvas dimensions.
 function Display(canvas) {
   this.canvas = canvas
   this.context = canvas.getContext("2d")
@@ -7,9 +7,9 @@ function Display(canvas) {
   this.width = 64
   this.height = 32
 
-  // The scale of one pseudo-pixel
+  // The scale of one display pseudo-pixel
   //
-  //   640 width = pseudo-pixels are 10px width
+  //   A canvas of 640px width = one pseudo-pixels is 10px width
   //
   this.xScale = this.canvas.width / this.width
   this.yScale = this.canvas.height / this.height
@@ -19,7 +19,7 @@ function Display(canvas) {
 
 // Clear the display. Draw all black.
 Display.prototype.clear = function() {
-  // A 64x32 matrix representing state of pseudo-pixels on the canvas.
+  // A 64x32 matrix representing state of each pseudo-pixels on the canvas.
   this.pixels = _.times(64, function() {
     return _.times(32, _.constant(0))
   })
@@ -47,16 +47,15 @@ Display.prototype.xorPixel = function(x, y) {
   // Set the pixel state
   var state = this.pixels[x][y] ^= 1
 
-  // Draw the pixel
   if (state) {
-    // Turn pixel on
+    // Draw pixel
     this.context.fillStyle = '#fff'
   } else {
-    // Turn pixel off
+    // Erase pixel
     this.context.fillStyle = '#000'
   }
   this.context.fillRect(x * this.xScale, y * this.yScale, this.xScale, this.yScale)
 
-  // Return state of pixel
+  // Return pixel state
   return state
 }
