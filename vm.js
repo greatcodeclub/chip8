@@ -44,7 +44,8 @@ VM.prototype.step = function() {
   var x = (instruction & 0x0F00) >> 8
   var y = (instruction & 0x00F0) >> 4
 
-  // A case for each type of opcode.
+  // Inspect the first nibble, the opcode.
+  // A case for each type of instruction.
   switch (instruction & 0xF000) {
     case 0x1000:
       // 1nnn - JP addr
@@ -55,7 +56,7 @@ VM.prototype.step = function() {
       // 3xkk - SE Vx, byte
       // Skip next instruction if Vx = kk.
       if (this.V[x] === (instruction & 0xFF)) {
-        this.pc += 2
+        this.pc += 2 // an instruction is 2 bytes
       }
       break
     case 0x6000:
