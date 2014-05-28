@@ -107,7 +107,7 @@ VM.prototype.stop = function() {
   this.timer = null
 }
 
-// Display n-byte sprite starting at memory address at (x, y).
+// Display n-byte sprite starting at memory `address` at (x, y).
 // Returns true if there's a collision.
 //
 // Eg.:
@@ -125,7 +125,7 @@ VM.prototype.stop = function() {
 //
 //    vm.drawSprite(2, 3, 0x21A, 5)
 //
-// Will draw a big 0 on the display.
+// Will draw a big 0 on the display at (2, 3).
 VM.prototype.drawSprite = function(x, y, address, nbytes) {
   var collision = false
 

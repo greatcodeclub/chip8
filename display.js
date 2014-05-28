@@ -29,15 +29,16 @@ Display.prototype.clear = function() {
 }
 
 // XOR a pixel at (x,y).
+// Returns true if the pixel was turned on.
 Display.prototype.xorPixel = function(x, y) {
-  // Wrap vertically
+  // Wrap around vertically
   if (x > this.width) {
     x -= this.width
   } else if (x < 0) {
     x += this.width
   }
 
-  // Wrap horizontally
+  // Wrap around horizontally
   if (y > this.height) {
     y -= this.height
   } else if (y < 0) {
@@ -45,9 +46,9 @@ Display.prototype.xorPixel = function(x, y) {
   }
 
   // Set the pixel state
-  var state = this.pixels[x][y] ^= 1
+  var active = this.pixels[x][y] ^= 1
 
-  if (state) {
+  if (active) {
     // Draw pixel
     this.context.fillStyle = '#fff'
   } else {
@@ -57,5 +58,5 @@ Display.prototype.xorPixel = function(x, y) {
   this.context.fillRect(x * this.xScale, y * this.yScale, this.xScale, this.yScale)
 
   // Return pixel state
-  return state
+  return active
 }
