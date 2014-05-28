@@ -8,9 +8,7 @@ function VM(display) {
   // See doc for typed arrays in JavaScript:
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
   this.memory = new Uint8Array(new ArrayBuffer(4095))
-}
 
-VM.prototype.reset = function() {
   // Registers
   this.V = new Uint8Array(new ArrayBuffer(16)) // Vx: 16 general purpose 8-bit registers
   this.I = 0 // I: 16-bit register, for storing addresses
@@ -18,14 +16,10 @@ VM.prototype.reset = function() {
   // Program counter. Address of the next instruction the VM will execute.
   // Programs start at address 0x200 in memory.
   this.pc = 0x200
-
-  this.display.clear()
 }
 
 // Load a program in memory
 VM.prototype.loadProgram = function(program) {
-  this.reset()
-
   // Load program in memory. Starting at address 0x200.
   for (var i = 0; i < program.length; i++) {
     this.memory[0x200 + i] = program[i]
