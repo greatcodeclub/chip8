@@ -68,7 +68,7 @@
   <script>
     var display = new Display($("canvas")[0])
     var vm = new VM(display)
-    vm.debugger = new Debugger(vm)
+    var vmDebugger = new Debugger(vm)
 
     loadROM("MAZE", function(program) {
       vm.loadProgram(program)
@@ -85,10 +85,11 @@
     })
     $("#debug").click(function() {
       $("#debugger").show()
-      vm.debugger.debug()
+      vmDebugger.debug()
     })
 
-    // Load ROM
+    // Load ROM from roms/ directory.
+    // Calls `callback(programData)` when done.
     function loadROM(name, callback) {
       var xhr = new XMLHttpRequest()
       xhr.open("GET", "roms/" + name, true)
