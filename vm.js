@@ -1,5 +1,7 @@
 function VM(display) {
   this.display = display
+
+  this.cpuSpeed = 60 // Hz
 }
 
 VM.prototype.reset = function() {
@@ -17,6 +19,7 @@ VM.prototype.reset = function() {
 
 VM.prototype.loadProgram = function(program) {
   this.reset()
+  this.display.clear()
 
   // Load program in memory
   for (var i = 0; i < program.length; i++) {
@@ -34,40 +37,40 @@ VM.prototype.step = function() {
   var x = (instruction & 0x0F00) >> 8
   var y = (instruction & 0x00F0) >> 4
 
-  switch (instruction & 0xf000) {
+  switch (instruction & 0xF000) {
     case 0x1000:
       // 1nnn - JP addr
       // Jump to location nnn.
-      this.pc = instruction & 0x0fff
+      this.pc = instruction & 0x0FFF
       break
     case 0x3000:
       // 3xkk - SE Vx, byte
       // Skip next instruction if Vx = kk.
-      if (this.V[x] === (instruction & 0xff)) {
+      if (this.V[x] === (instruction & 0xFF)) {
         this.pc += 2
       }
       break
     case 0x6000:
       // 6xkk - LD Vx, byte
       // Set Vx = kk.
-      this.V[x] = instruction & 0xff
+      this.V[x] = instruction & 0xFF
       break
     case 0x7000:
       // 7xkk - ADD Vx, byte
       // Set Vx = Vx + kk.
-      this.V[x] = this.V[x] + (instruction & 0xff) & 0xff
+      this.V[x] = this.V[x] + (instruction & 0xFF) & 0xFF
       break
-    case 0xa000:
+    case 0xA000:
       // Annn - LD I, addr
       // Set I = nnn.
-      this.I = instruction & 0xfff
+      this.I = instruction & 0xFFF
       break
-    case 0xc000:
+    case 0xC000:
       // Cxkk - RND Vx, byte
       // Set Vx = random byte AND kk.
-      this.V[x] = (Math.random() * (0xff + 1)) & (instruction & 0xff)
+      this.V[x] = (Math.random() * (0xFF + 1)) & (instruction & 0xFF)
       break
-    case 0xd000:
+    case 0xD000:
       // Dxyn - DRW Vx, Vy, nibble
       // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 
@@ -79,20 +82,23 @@ VM.prototype.step = function() {
       // *  *  10010000
       // ****  11110000
 
-      this.V[0xf] = 0
+      this.V[0xF] = 0
 
       var n = instruction & 0x000F
 
       for (var line = 0; line < n; line++) {      // Walk the horizontal lines (Y)
         var bits = this.memory[this.I + line]     // Get the sprite line bits to draw
+        
         for (var bit = 7; bit >= 0; bit--) {      // Walk the bits on the line (X),
                                                   // starting from first bit (right).
           if (bits & 1) {                         // Check the first bit only
-            if (this.display.setPixel(this.V[x] + bit, this.V[y] + line)) {
-              this.V[0xf] = 1                     // The pixel was erased
+            if (!this.display.xorPixel(this.V[x] + bit, this.V[y] + line)) {
+              this.V[0xF] = 1                     // The pixel was erased
             }
           }
+
           bits >>= 1                              // Move forward one bit
+
         }
       }
 
@@ -103,7 +109,7 @@ VM.prototype.step = function() {
 }
 
 VM.prototype.run = function() {
-  var interval = 1000 / 60 // 60 cycles per sec
+  var interval = 1000 / this.cpuSpeed
   var self = this
 
   this.timer = setInterval(function() {
