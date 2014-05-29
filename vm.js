@@ -2,7 +2,7 @@ function VM(display) {
   this.display = display
 
   // CPU speed (in Hertz). Number of cycles per second.
-  this.cpuSpeed = 60 // Hz
+  this.cpuSpeed = 10 // Hz
 
   // Initialize 4KB of memory.
   // See doc for typed arrays in JavaScript:
@@ -30,53 +30,48 @@ VM.prototype.loadProgram = function(program) {
 VM.prototype.step = function() {
   // Read the instructions at `pc`. Instructions are 2 bytes long.
   var instruction = (this.memory[this.pc] << 8) + this.memory[this.pc+1]
-  
+
   // Move to next instruction
   this.pc += 2
 
-  // Extract common operands: x (2nd nibble) and y (3rd nibble).
-  var x = (instruction & 0x0F00) >> 8
-  var y = (instruction & 0x00F0) >> 4
+  // Extract common operands.
+  var x   = (instruction & 0x0F00) >> 8
+  var y   = (instruction & 0x00F0) >> 4
+  var kk  =  instruction & 0x00FF
+  var nnn =  instruction & 0x0FFF
+  var n   =  instruction & 0x000F
 
   // Inspect the first nibble, the opcode.
   // A case for each type of instruction.
   switch (instruction & 0xF000) {
     case 0x1000:
-      // 1nnn - JP addr
-      // Jump to location nnn.
-      this.pc = instruction & 0x0FFF
+      // 1nnn - Jump to location nnn.
+      this.pc = nnn
       break
     case 0x3000:
-      // 3xkk - SE Vx, byte
-      // Skip next instruction if Vx = kk.
-      if (this.V[x] === (instruction & 0xFF)) {
+      // 3xkk - Skip next instruction if Vx = kk.
+      if (this.V[x] === kk) {
         this.pc += 2 // an instruction is 2 bytes
       }
       break
     case 0x6000:
-      // 6xkk - LD Vx, byte
-      // Set Vx = kk.
-      this.V[x] = instruction & 0xFF
+      // 6xkk - Set Vx = kk.
+      this.V[x] = kk
       break
     case 0x7000:
-      // 7xkk - ADD Vx, byte
-      // Set Vx = Vx + kk.
-      this.V[x] = this.V[x] + (instruction & 0xFF) & 0xFF
+      // 7xkk - Set Vx = Vx + kk.
+      this.V[x] = this.V[x] + kk
       break
     case 0xA000:
-      // Annn - LD I, addr
-      // Set I = nnn.
-      this.I = instruction & 0xFFF
+      // Annn - Set I = nnn.
+      this.I = nnn
       break
     case 0xC000:
-      // Cxkk - RND Vx, byte
-      // Set Vx = random byte AND kk.
-      this.V[x] = (Math.random() * (0xFF + 1)) & (instruction & 0xFF)
+      // Cxkk - Set Vx = random byte AND kk.
+      this.V[x] = (Math.random() * (0xFF + 1)) & kk
       break
     case 0xD000:
-      // Dxyn - DRW Vx, Vy, nibble
-      // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-      var n = instruction & 0x000F
+      // Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
       var collision = this.drawSprite(this.V[x], this.V[y], this.I, n)
       // VF is set to 1 if there is a collision.
       this.V[0xF] = collision ? 1 : 0
@@ -125,7 +120,7 @@ VM.prototype.drawSprite = function(x, y, address, nbytes) {
 
   for (var line = 0; line < nbytes; line++) { // Walk the horizontal lines (Y)
     var bits = this.memory[address + line]    // Get the sprite line bits to draw
-    
+
     for (var bit = 7; bit >= 0; bit--) {      // Walk the bits on the line (X),
                                               // starting from last bit (left).
 

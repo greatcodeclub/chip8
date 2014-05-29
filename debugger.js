@@ -21,14 +21,11 @@ Debugger.prototype.dumpMemory = function() {
 
     if (instruction === 0) break;
 
-    var info = this.disassemble(instruction)
-
     $("<tr>")
       .attr("id", "mem-" + i)
       .append($("<td>").text("0x" + hex(i, 3)))
       .append($("<td>").text(hex(instruction, 4)))
-      .append($("<td>").text(info[0]))
-      .append($("<td>").append($("<pre>").text(info[1])))
+      .append($("<td>").append($("<pre>").text(this.disassemble(instruction))))
       .appendTo($tbody)
   }
 }
@@ -98,30 +95,23 @@ Debugger.prototype.disassemble = function(instruction) {
 
   switch (instruction & 0xf000) {
     case 0x1000:
-      return ["jmp 0x" + nnn,
-              "Jump to address 0x" + nnn]
+      return "1nnn - Jump to address 0x" + nnn
     case 0x3000:
-      return ["jeq V" + x + ", 0x" + kk,
-              "Skip next instruction if V" + x + " = 0x" + kk]
+      return "3xkk - Skip next instruction if V" + x + " = 0x" + kk
     case 0x6000:
-      return ["mov V" + x + ", 0x" + kk,
-              "Set V" + x + " = 0x" + kk]
+      return "6xkk - Set V" + x + " = 0x" + kk
     case 0x7000:
-      return ["add V" + x + ", 0x" + kk,
-              "Set V" + x + " = V" + x + " + 0x" + kk]
+      return "7xkk - Set V" + x + " = V" + x + " + 0x" + kk
     case 0xa000:
-      return ["mov I, 0x" + nnn,
-              "Set I = 0x" + nnn]
+      return "Annn - Set I = 0x" + nnn
     case 0xc000:
-      return ["rnd V" + x + ", 0x" + kk,
-              "Set V" + x + " = random byte AND 0x" + kk]
+      return "Cxkk - Set V" + x + " = random byte AND 0x" + kk
     case 0xd000:
-      return ["drw V" + x + ", V" + y + ", 0x" + n,
-              "Draw sprite in I..I+" + n + " at (V" + x + ",V" + y + ")"]
+      return "Dxyn - Draw sprite in I..I+" + n + " at (V" + x + ",V" + y + ")"
     default:
       // Anything else is either an unimplemented instruction or sprite data.
       // We display the sprite bits.
       var data = hex(instruction.toString(2), 16)
-      return ["<sprite>", data.substr(0, 8) + "\n" + data.substr(8, 8)]
+      return data.substr(0, 8) + "\n" + data.substr(8, 8)
   }
 }

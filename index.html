@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">        
+  <meta charset="utf-8">
   <title>Chip-8 VM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -11,7 +11,7 @@
       font-family: monospace;
     }
     h2 {
-      font-size: 16px;
+      font-size: 18px;
       margin: 10px 0 5px 0;
     }
     .col {
@@ -36,18 +36,16 @@
     <button id="run">Run</button>
     <button id="stop">Stop</button>
     <button id="step">Step</button>
-    <button id="debug">Debug</button>
   </div>
 
-  <div id="debugger" style="display:none">
+  <div id="debugger">
     <div class="col">
       <h2>Memory</h2>
       <table id="memory">
         <thead>
           <tr>
-            <th title="Address">Addr.</th>
-            <th title="Instruction">Inst.</th>
-            <th>Assembly</th>
+            <th>Addresse</th>
+            <th>Instruction</th>
             <th>Description</th>
           </tr>
         </thead>
@@ -60,7 +58,7 @@
       <table id="registers">
         <tbody></tbody>
       </table>
-    </div>    
+    </div>
   </div>
 
   <script src="vendor/jquery.js"></script>
@@ -76,6 +74,7 @@
 
     loadROM("MAZE", function(program) {
       vm.loadProgram(program)
+      vmDebugger.debug()
     })
 
     $("#run").click(function() {
@@ -86,10 +85,6 @@
     })
     $("#step").click(function() {
       vm.step()
-    })
-    $("#debug").click(function() {
-      $("#debugger").show()
-      vmDebugger.debug()
     })
 
     // Load ROM from roms/ directory.
