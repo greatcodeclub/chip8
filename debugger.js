@@ -7,6 +7,9 @@
 //
 function Debugger(vm) {
   this.vm = vm
+  
+  this.dumpMemory()
+  this.initRegisters()
 }
 
 Debugger.prototype.dumpMemory = function() {
@@ -68,7 +71,6 @@ Debugger.prototype.debug = function() {
   var self = this
 
   this.dumpMemory()
-  this.initRegisters()
 
   this.stop()
   this.timer = setInterval(function() {
