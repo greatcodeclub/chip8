@@ -7,7 +7,7 @@
 
   <style>
     #memory, #registers {
-      font-size: 14px;
+      font-size: 16px;
       font-family: monospace;
     }
     #memory {
@@ -34,10 +34,10 @@
   </style>
 </head>
 <body>
-  <canvas id="canvas" tabindex="1" width="640" height="320"></canvas>
-  <div class="commands">
-    <button id="run">Run</button>
-    <button id="stop">Stop</button>
+  <canvas id="canvas" class="col" tabindex="1" width="640" height="320"></canvas>
+  <div id="commands" class="col">
+    <button id="run">Run</button><br>
+    <button id="stop">Stop</button><br>
     <button id="step">Step</button>
   </div>
 
