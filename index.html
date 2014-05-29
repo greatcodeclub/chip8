@@ -7,12 +7,12 @@
 
   <style>
     #memory, #registers {
-      font-size: 12px;
+      font-size: 14px;
       font-family: monospace;
     }
     h2 {
       font-size: 16px;
-      margin: 0;
+      margin: 10px 0 5px 0;
     }
     .col {
       float: left;
@@ -22,7 +22,11 @@
       color: red;
     }
     td {
-      padding-right: 10px;
+      padding-right: 15px;
+      vertical-align: top;
+    }
+    pre {
+      margin: 0;
     }
   </style>
 </head>
@@ -41,8 +45,8 @@
       <table id="memory">
         <thead>
           <tr>
-            <th>Address</th>
-            <th>Instruction</th>
+            <th title="Address">Addr.</th>
+            <th title="Instruction">Inst.</th>
             <th>Assembly</th>
             <th>Description</th>
           </tr>

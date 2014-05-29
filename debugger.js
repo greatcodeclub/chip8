@@ -28,7 +28,7 @@ Debugger.prototype.dumpMemory = function() {
       .append($("<td>").text("0x" + hex(i, 3)))
       .append($("<td>").text(hex(instruction, 4)))
       .append($("<td>").text(info[0]))
-      .append($("<td>").text(info[1]))
+      .append($("<td>").append($("<pre>").text(info[1])))
       .appendTo($tbody)
   }
 }
@@ -67,6 +67,7 @@ Debugger.prototype.update = function() {
 
 // Start inspecting the VM for value changes.
 Debugger.prototype.debug = function() {
+  var interval = 1000 / this.vm.cpuSpeed
   var self = this
 
   this.dumpMemory()
@@ -75,7 +76,7 @@ Debugger.prototype.debug = function() {
   this.stop()
   this.timer = setInterval(function() {
     self.update()
-  }, 1000 / 60)
+  }, interval)
 }
 
 // Stop watching the VM for changes.
@@ -89,22 +90,38 @@ Debugger.prototype.stop = function() {
 //
 // Returns an array: [assembly, description]
 Debugger.prototype.disassemble = function(instruction) {
+  var x = hex((instruction & 0x0F00) >> 8)
+  var y = hex((instruction & 0x00F0) >> 4)
+  var nnn = hex(instruction & 0x0FFF, 3)
+  var kk = hex(instruction & 0x00FF, 2)
+  var n = hex(instruction & 0x000F, 1)
+
   switch (instruction & 0xf000) {
     case 0x1000:
-      return ["1nnn - JP addr", "Jump to location nnn"]
+      return ["jmp 0x" + nnn,
+              "Jump to address 0x" + nnn]
     case 0x3000:
-      return ["3xkk - SE Vx, byte", "Skip next instruction if Vx = kk"]
+      return ["jeq V" + x + ", 0x" + kk,
+              "Skip next instruction if V" + x + " = 0x" + kk]
     case 0x6000:
-      return ["6xkk - LD Vx, byte", "Set Vx = kk"]
+      return ["mov V" + x + ", 0x" + kk,
+              "Set V" + x + " = 0x" + kk]
     case 0x7000:
-      return ["7xkk - ADD Vx, byte", "Set Vx = Vx + kk"]
+      return ["add V" + x + ", 0x" + kk,
+              "Set V" + x + " = V" + x + " + 0x" + kk]
     case 0xa000:
-      return ["Annn - LD I, addr", "Set I = nnn"]
+      return ["mov I, 0x" + nnn,
+              "Set I = 0x" + nnn]
     case 0xc000:
-      return ["Cxkk - RND Vx, byte", "Set Vx = random byte AND kk"]
+      return ["rnd V" + x + ", 0x" + kk,
+              "Set V" + x + " = random byte AND 0x" + kk]
     case 0xd000:
-      return ["Dxyn - DRW Vx, Vy, nibble", "Display n-byte sprite ..."]
+      return ["drw V" + x + ", V" + y + ", 0x" + n,
+              "Draw sprite in I..I+" + n + " at (V" + x + ",V" + y + ")"]
     default:
-      return ["???"]
+      // Anything else is either an unimplemented instruction or sprite data.
+      // We display the sprite bits.
+      var data = hex(instruction.toString(2), 16)
+      return ["<sprite>", data.substr(0, 8) + "\n" + data.substr(8, 8)]
   }
 }
