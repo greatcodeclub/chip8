@@ -7,7 +7,7 @@ function VM(display) {
   // Initialize 4KB of memory.
   // See doc for typed arrays in JavaScript:
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
-  this.memory = new Uint8Array(new ArrayBuffer(4095))
+  this.memory = new Uint8Array(new ArrayBuffer(4096))
 
   // Registers
   this.V = new Uint8Array(new ArrayBuffer(16)) // Vx: 16 general purpose 8-bit registers
