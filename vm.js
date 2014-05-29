@@ -2,7 +2,7 @@ function VM(display) {
   this.display = display
 
   // CPU speed (in Hertz). Number of cycles per second.
-  this.cpuSpeed = 10 // Hz
+  this.cpuSpeed = 100 // Hz
 
   // Initialize 4KB of memory.
   // See doc for typed arrays in JavaScript:
