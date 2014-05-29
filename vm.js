@@ -1,99 +1,78 @@
 function VM(display) {
   this.display = display
 
-  // CPU speed (in Hertz). Number of cycles per second.
   this.cpuSpeed = 100 // Hz
 
-  // Initialize 4KB of memory.
-  // See doc for typed arrays in JavaScript:
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
+  // Allocate 4KB of memory
   this.memory = new Uint8Array(new ArrayBuffer(4096))
 
-  // Registers
-  this.V = new Uint8Array(new ArrayBuffer(16)) // Vx: 16 general purpose 8-bit registers
-  this.I = 0 // I: 16-bit register, for storing addresses
-
-  // Program counter. Address of the next instruction the VM will execute.
-  // Programs start at address 0x200 in memory.
   this.pc = 0x200
+
+  this.I = 0 // 16-bit register
+  this.V = new Uint8Array(new ArrayBuffer(16)) // 8-bit registers
 }
 
-// Load a program in memory
 VM.prototype.loadProgram = function(program) {
-  // Load program in memory. Starting at address 0x200.
   for (var i = 0; i < program.length; i++) {
     this.memory[0x200 + i] = program[i]
   }
 }
 
-// One cycle in the VM. Executes one instruction.
-VM.prototype.step = function() {
-  // Read the instructions at `pc`. Instructions are 2 bytes long.
-  var instruction = (this.memory[this.pc] << 8) + this.memory[this.pc+1]
-
-  // Move to next instruction
-  this.pc += 2
-
-  // Extract common operands.
-  var x   = (instruction & 0x0F00) >> 8
-  var y   = (instruction & 0x00F0) >> 4
-  var kk  =  instruction & 0x00FF
-  var nnn =  instruction & 0x0FFF
-  var n   =  instruction & 0x000F
-
-  // Inspect the first nibble, the opcode.
-  // A case for each type of instruction.
-  switch (instruction & 0xF000) {
-    case 0x1000:
-      // 1nnn - Jump to location nnn.
-      this.pc = nnn
-      break
-    case 0x3000:
-      // 3xkk - Skip next instruction if Vx = kk.
-      if (this.V[x] === kk) {
-        this.pc += 2 // an instruction is 2 bytes
-      }
-      break
-    case 0x6000:
-      // 6xkk - Set Vx = kk.
-      this.V[x] = kk
-      break
-    case 0x7000:
-      // 7xkk - Set Vx = Vx + kk.
-      this.V[x] = this.V[x] + kk
-      break
-    case 0xA000:
-      // Annn - Set I = nnn.
-      this.I = nnn
-      break
-    case 0xC000:
-      // Cxkk - Set Vx = random byte AND kk.
-      this.V[x] = (Math.random() * (0xFF + 1)) & kk
-      break
-    case 0xD000:
-      // Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-      var collision = this.drawSprite(this.V[x], this.V[y], this.I, n)
-      // VF is set to 1 if there is a collision.
-      this.V[0xF] = collision ? 1 : 0
-      break
-    default:
-      throw new Error("Unsupported instruction at 0x" + hex(this.pc, 3) + ": " + hex(instruction, 4))
-  }
-}
-
 VM.prototype.run = function() {
+  // 50 Hz = 50 cycles per seconds
   var interval = 1000 / this.cpuSpeed
   var self = this
 
-  this.stop()
-  this.timer = setInterval(function() {
+  setInterval(function() {
     self.step()
   }, interval)
 }
 
-VM.prototype.stop = function() {
-  clearTimeout(this.timer)
-  this.timer = null
+VM.prototype.step = function() {
+  var instruction = (this.memory[this.pc] << 8) + this.memory[this.pc+1]
+
+  this.pc += 2
+
+  // Operands
+  var x = (instruction & 0x0F00) >> 8
+  var y = (instruction & 0x00F0) >> 4
+  var kk = instruction & 0x00FF
+  var nnn = instruction & 0x0FFF
+  var n = instruction & 0x000F
+
+  switch (instruction & 0xF000) {
+    case 0x1000:
+      // `1nnn` - Jump to location nnn.
+      this.pc = nnn
+      break
+    case 0x3000:
+      // `3xkk` - Skip next instruction if Vx = kk.
+      if (this.V[x] === kk) {
+        this.pc += 2
+      }
+      break
+    case 0x6000:
+      // `6xkk` - Set Vx = kk.
+      this.V[x] = kk
+      break
+    case 0x7000:
+      // `7xkk` - Set Vx = Vx + kk.
+      this.V[x] = this.V[x] + kk
+      break
+    case 0xA000:
+      // `Annn` - Set I = nnn.
+      this.I = nnn
+      break
+    case 0xC000:
+      // `Cxkk` - Set Vx = random byte AND kk.
+      this.V[x] = (Math.random() * (0xFF + 1)) & kk
+      break
+    case 0xD000:
+      // `Dxyn` - Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+      var collision = this.drawSprite(this.V[x], this.V[y], this.I, n)
+      this.V[0xF] = collision ? 1 : 0
+      break
+  }
 }
 
 // Display n-byte sprite starting at memory `address` at (x, y).
@@ -118,11 +97,11 @@ VM.prototype.stop = function() {
 VM.prototype.drawSprite = function(x, y, address, nbytes) {
   var collision = false
 
-  for (var line = 0; line < nbytes; line++) { // Walk the horizontal lines (Y)
-    var bits = this.memory[address + line]    // Get the sprite line bits to draw
+  for (var line = 0; line < nbytes; line++) { // Walk the horizonta
+    var bits = this.memory[address + line]    // Get the sprite lin
 
-    for (var bit = 7; bit >= 0; bit--) {      // Walk the bits on the line (X),
-                                              // starting from last bit (left).
+    for (var bit = 7; bit >= 0; bit--) {      // Walk the bits on t
+                                              // starting from last
 
       if (bits & 1) {                         // Check current bit
         if (!this.display.xorPixel(x + bit, y + line)) {
@@ -130,7 +109,7 @@ VM.prototype.drawSprite = function(x, y, address, nbytes) {
         }
       }
 
-      bits >>= 1                              // Move forward one bit
+      bits >>= 1                              // Move forward one b
 
     }
   }

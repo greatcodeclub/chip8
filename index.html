@@ -78,20 +78,17 @@
     var display = new Display($("canvas")[0])
     var vm = new VM(display)
     var vmDebugger = new Debugger(vm)
-
+    
     loadROM("MAZE", function(program) {
       vm.loadProgram(program)
       vmDebugger.debug()
     })
 
-    $("#run").click(function() {
-      vm.run()
-    })
-    $("#stop").click(function() {
-      vm.stop()
-    })
     $("#step").click(function() {
       vm.step()
+    })
+    $("#run").click(function() {
+      vm.run()
     })
 
     // Load ROM from roms/ directory.

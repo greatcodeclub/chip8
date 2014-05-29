@@ -24,14 +24,13 @@ setup automatic reloading.
 Only 7 out of the 35 opcodes are supported. Mainly for loading values in
 registers and drawing sprites:
 
-- **1NNN** - Jump to location nnn.
-- **3xkk** - Skip next instruction if Vx = kk.
-- **6xkk** - Set Vx = kk.
-- **7xkk** - Set Vx = Vx + kk.
-- **Annn** - Set I = nnn.
-- **Cxkk** - Set Vx = random byte AND kk.
-- **Dxyn** - Display n-byte sprite starting at memory location I at (Vx, Vy),
-  set VF = collision.
+- `1nnn` - Jump to location nnn.
+- `3xkk` - Skip next instruction if Vx = kk.
+- `6xkk` - Set Vx = kk.
+- `7xkk` - Set Vx = Vx + kk.
+- `Annn` - Set I = nnn.
+- `Cxkk` - Set Vx = random byte AND kk.
+- `Dxyn` - Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 
 The call stack, timers, input and sound are not implemented.
 
