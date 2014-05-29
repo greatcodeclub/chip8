@@ -103,7 +103,7 @@ VM.prototype.stop = function() {
 //
 // Assuming the following sprite in memory at address 0x21A:
 //
-//    Addr   Val      Bits    Pixels
+//    Addr   Byte     Bits    Pixels
 //    0x21A  0xF0   11110000  ****
 //    0x21B  0x90   10010000  *  *
 //    0x21C  0x90   10010000  *  *

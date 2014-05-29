@@ -7,7 +7,7 @@
 //
 function Debugger(vm) {
   this.vm = vm
-  
+
   this.dumpMemory()
   this.initRegisters()
 }
@@ -89,11 +89,11 @@ Debugger.prototype.stop = function() {
 //
 // Returns an array: [assembly, description]
 Debugger.prototype.disassemble = function(instruction) {
-  var x = hex((instruction & 0x0F00) >> 8)
-  var y = hex((instruction & 0x00F0) >> 4)
+  var x   = hex((instruction & 0x0F00) >> 8)
+  var y   = hex((instruction & 0x00F0) >> 4)
   var nnn = hex(instruction & 0x0FFF, 3)
-  var kk = hex(instruction & 0x00FF, 2)
-  var n = hex(instruction & 0x000F, 1)
+  var kk  = hex(instruction & 0x00FF, 2)
+  var n   = hex(instruction & 0x000F, 1)
 
   switch (instruction & 0xf000) {
     case 0x1000:
