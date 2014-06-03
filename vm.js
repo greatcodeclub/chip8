@@ -23,9 +23,15 @@ VM.prototype.run = function() {
   var interval = 1000 / this.cpuSpeed
   var self = this
 
-  setInterval(function() {
+  this.stop()
+  this.timer = setInterval(function() {
     self.step()
   }, interval)
+}
+
+VM.prototype.stop = function() {
+  clearTimeout(this.timer)
+  this.timer = null
 }
 
 VM.prototype.step = function() {
