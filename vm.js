@@ -10,6 +10,8 @@ function VM(display) {
 
   this.I = 0 // 16-bit register
   this.V = new Uint8Array(new ArrayBuffer(16)) // 8-bit registers
+
+  this.stack = []
 }
 
 VM.prototype.loadProgram = function(program) {
@@ -47,8 +49,21 @@ VM.prototype.step = function() {
   var n = instruction & 0x000F
 
   switch (instruction & 0xF000) {
+    case 0x0000:
+      switch (instruction) {
+        case 0x00EE:
+          // `00EE` - Return from a subroutine.
+          this.pc = this.stack.pop()
+          break
+      }
+      break
     case 0x1000:
       // `1nnn` - Jump to location nnn.
+      this.pc = nnn
+      break
+    case 0x2000:
+      // `2nnn` - Call subroutine at nnn.
+      this.stack.push(this.pc)
       this.pc = nnn
       break
     case 0x3000:
