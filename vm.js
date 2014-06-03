@@ -51,6 +51,10 @@ VM.prototype.step = function() {
   switch (instruction & 0xF000) {
     case 0x0000:
       switch (instruction) {
+        case 0x00E0:
+          // `00E0` - Clear the display.
+          this.display.clear()
+          break
         case 0x00EE:
           // `00EE` - Return from a subroutine.
           this.pc = this.stack.pop()
@@ -69,6 +73,12 @@ VM.prototype.step = function() {
     case 0x3000:
       // `3xkk` - Skip next instruction if Vx = kk.
       if (this.V[x] === kk) {
+        this.pc += 2
+      }
+      break
+    case 0x4000:
+      // `4xkk` - Skip next instruction if Vx != kk.
+      if (this.V[x] !== kk) {
         this.pc += 2
       }
       break
@@ -92,6 +102,14 @@ VM.prototype.step = function() {
       // `Dxyn` - Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
       var collision = this.drawSprite(this.V[x], this.V[y], this.I, n)
       this.V[0xF] = collision ? 1 : 0
+      break
+    case 0xF000:
+      switch (instruction & 0xF0FF) {
+        case 0xF01E:
+          // `Fx1E` - Set I = I + Vx.
+          this.I = this.I + this.V[x]
+          break
+      }
       break
   }
 }
