@@ -145,7 +145,7 @@ Debugger.prototype.disassemble = function(instruction) {
       return "1nnn - Jump to address 0x" + nnnHex
     case 0x2000:
       if (nnn < 0x200) return null
-      return "2nnn -- Call subroutine at 0x" + nnnHex
+      return "2nnn - Call subroutine at 0x" + nnnHex
     case 0x3000:
       return "3xkk - Skip next instruction if V" + xHex + " = 0x" + kkHex
     case 0x4000:
