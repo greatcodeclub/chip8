@@ -21,19 +21,24 @@ setup automatic reloading.
 
 ## Opcodes
 
-Only 7 out of the 35 opcodes are supported. Mainly for loading values in
+Only 12 out of the 35 opcodes are supported. Mainly for loading values in
 registers and drawing sprites:
 
-- **1NNN** - Jump to location nnn.
-- **3xkk** - Skip next instruction if Vx = kk.
-- **6xkk** - Set Vx = kk.
-- **7xkk** - Set Vx = Vx + kk.
-- **Annn** - Set I = nnn.
-- **Cxkk** - Set Vx = random byte AND kk.
-- **Dxyn** - Display n-byte sprite starting at memory location I at (Vx, Vy),
+- `00E0` - Clear the display.
+- `00EE` - Return from a subroutine.
+- `1nnn` - Jump to location nnn.
+- `2nnn` - Call subroutine at nnn.
+- `3xkk` - Skip next instruction if Vx = kk.
+- `4xkk` - Skip next instruction if Vx != kk.
+- `6xkk` - Set Vx = kk.
+- `7xkk` - Set Vx = Vx + kk.
+- `Annn` - Set I = nnn.
+- `Cxkk` - Set Vx = random byte AND kk.
+- `Dxyn` - Display n-byte sprite starting at memory location I at (Vx, Vy),
   set VF = collision.
+- `Fx1E` - Set I = I + Vx.
 
-The call stack, timers, input and sound are not implemented.
+The timers, input and sound are not implemented.
 
 ## License
 

@@ -49,11 +49,11 @@ VM.prototype.step = function() {
     case 0x0000:
       switch (instruction) {
         case 0x00E0:
-          // Clear the display.
+          // 00E0 - Clear the display.
           this.display.clear()
           break
         case 0x00EE:
-          // Return from a subroutine.
+          // 00EE - Return from a subroutine.
           this.pc = this.stack.pop()
           break
       }
