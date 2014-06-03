@@ -22,7 +22,7 @@ Debugger.prototype.dumpMemory = function() {
   for (var i = 0x200; i < memory.length; i+=2) {
     var instruction = (memory[i] << 8) + memory[i+1]
 
-    if (instruction === 0) break;
+    // if (instruction === 0) break;
 
     $("<tr>")
       .attr("id", "mem-" + i)
@@ -96,10 +96,22 @@ Debugger.prototype.disassemble = function(instruction) {
   var n   = hex(instruction & 0x000F, 1)
 
   switch (instruction & 0xf000) {
+    case 0x0000:
+      switch (instruction) {
+        case 0x00E0:
+          return "00E0 - Clear the display"
+        case 0x00EE:
+          return "00E0 - Return from a subroutine"
+      }
+      return "???"
     case 0x1000:
       return "1nnn - Jump to address 0x" + nnn
+    case 0x2000:
+      return "2nnn -- Call subroutine at 0x" + nnn
     case 0x3000:
       return "3xkk - Skip next instruction if V" + x + " = 0x" + kk
+    case 0x4000:
+      return "4xkk - Skip next instruction if V" + x + " != 0x" + kk
     case 0x6000:
       return "6xkk - Set V" + x + " = 0x" + kk
     case 0x7000:
@@ -110,6 +122,12 @@ Debugger.prototype.disassemble = function(instruction) {
       return "Cxkk - Set V" + x + " = random byte AND 0x" + kk
     case 0xd000:
       return "Dxyn - Draw sprite in I..I+" + n + " at (V" + x + ",V" + y + ")"
+    case 0xF000:
+      switch (instruction & 0xF0FF) {
+        case 0xF01E:
+          return "Fx1E - Set I = I + V" + x
+      }
+      return "???"
     default:
       // Anything else is either an unimplemented instruction or sprite data.
       // We display the sprite bits.

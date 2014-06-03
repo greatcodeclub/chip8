@@ -16,6 +16,8 @@ function VM(display) {
   // Program counter. Address of the next instruction the VM will execute.
   // Programs start at address 0x200 in memory.
   this.pc = 0x200
+
+  this.stack = []
 }
 
 // Load a program in memory
@@ -44,13 +46,36 @@ VM.prototype.step = function() {
   // Inspect the first nibble, the opcode.
   // A case for each type of instruction.
   switch (instruction & 0xF000) {
+    case 0x0000:
+      switch (instruction) {
+        case 0x00E0:
+          // Clear the display.
+          this.display.clear()
+          break
+        case 0x00EE:
+          // Return from a subroutine.
+          this.pc = this.stack.pop()
+          break
+      }
+      break
     case 0x1000:
       // 1nnn - Jump to location nnn.
+      this.pc = nnn
+      break
+    case 0x2000:
+      // 2nnn -- Call subroutine at nnn.
+      this.stack.push(this.pc)
       this.pc = nnn
       break
     case 0x3000:
       // 3xkk - Skip next instruction if Vx = kk.
       if (this.V[x] === kk) {
+        this.pc += 2 // an instruction is 2 bytes
+      }
+      break
+    case 0x4000:
+      // 4xkk - Skip next instruction if Vx != kk.
+      if (this.V[x] !== kk) {
         this.pc += 2 // an instruction is 2 bytes
       }
       break
@@ -75,6 +100,14 @@ VM.prototype.step = function() {
       var collision = this.drawSprite(this.V[x], this.V[y], this.I, n)
       // VF is set to 1 if there is a collision.
       this.V[0xF] = collision ? 1 : 0
+      break
+    case 0xF000:
+      switch (instruction & 0xF0FF) {
+        case 0xF01E:
+          // Fx1E - Set I = I + Vx.
+          this.I += this.V[x]
+          break
+      }
       break
     default:
       throw new Error("Unsupported instruction at 0x" + hex(this.pc, 3) + ": " + hex(instruction, 4))
