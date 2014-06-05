@@ -79,7 +79,7 @@
     var vm = new VM(display)
     var vmDebugger = new Debugger(vm)
 
-    loadROM("LOGO", function(program) {
+    loadROM("MAZE", function(program) {
       vm.loadProgram(program)
       vmDebugger.debug()
     })
