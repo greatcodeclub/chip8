@@ -44,5 +44,5 @@ The timers, input and sound are not implemented.
 
 Copyright 2014 Coded Inc. <marc@codedinc.com>
 
-You are free to modify and distribute this however you want. Except for teaching
+You are free to modify and distribute this however you want for teaching
 purposes.
