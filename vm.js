@@ -87,6 +87,13 @@ VM.prototype.step = function() {
       // 7xkk - Set Vx = Vx + kk.
       this.V[x] = this.V[x] + kk
       break
+	case 0x8000:
+		if (n == 0)
+		{
+			// 8xy0 - Set Vx = Vy
+			this.V[x] = this.V[y];
+		}
+		break
     case 0xA000:
       // Annn - Set I = nnn.
       this.I = nnn
