@@ -32,6 +32,7 @@ registers and drawing sprites:
 - `4xkk` - Skip next instruction if Vx != kk.
 - `6xkk` - Set Vx = kk.
 - `7xkk` - Set Vx = Vx + kk.
+- `8xy0` - Set Vx = Vy.
 - `Annn` - Set I = nnn.
 - `Cxkk` - Set Vx = random byte AND kk.
 - `Dxyn` - Display n-byte sprite starting at memory location I at (Vx, Vy),
