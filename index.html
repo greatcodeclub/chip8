@@ -39,9 +39,42 @@
 <body>
   <canvas id="canvas" class="col" tabindex="1" width="640" height="320"></canvas>
   <div id="commands" class="col">
-    <button id="run">Run</button><br>
+    <button id="load">Load</button>
+    <select id="romSelect">
+      <option value="15PUZZLE">*15PUZZLE</option>
+      <option value="BLINKY">*BLINKY</option>
+      <option value="BLITZ">*BLITZ</option>
+      <option value="BRIX">*BRIX</option>
+      <option value="CONNECT4">*CONNECT4</option>
+      <option value="GUESS">*GUESS</option>
+      <option value="HIDDEN">*HIDDEN</option>
+      <option value="IBM">*IBM</option>
+      <option value="INVADERS">*INVADERS</option>
+      <option value="KALEID">*KALEID</option>
+      <option value="LOGO">LOGO</option>
+      <option value="MAZE" selected="selected">MAZE</option>
+      <option value="MERLIN">*MERLIN</option>
+      <option value="MISSILE">*MISSILE</option>
+      <option value="PONG">*PONG</option>
+      <option value="PONG2">*PONG2</option>
+      <option value="PUZZLE">*PUZZLE</option>
+      <option value="SYZYGY">*SYZYGY</option>
+      <option value="TANK">*TANK</option>
+      <option value="TETRIS">*TETRIS</option>
+      <option value="TICTAC">*TICTAC</option>
+      <option value="UFO">*UFO</option>
+      <option value="VBRIX">*VBRIX</option>
+      <option value="VERS">*VERS</option>
+      <option value="WIPEOFF">*WIPEOFF</option>
+    </select>
+    <br>
+    <button id="run">Run</button>
+    <br>
     <button id="stop">Stop</button><br>
     <button id="step">Step</button>
+
+    
+
   </div>
   <div class="clear"></div>
 
@@ -78,12 +111,28 @@
     var display = new Display($("canvas")[0])
     var vm = new VM(display)
     var vmDebugger = new Debugger(vm)
+    var e = document.getElementById("romSelect")
+    var romChoice = e.options[e.selectedIndex].value
 
-    loadROM("MAZE", function(program) {
+    loadROM(romChoice, function(program) {
       vm.loadProgram(program)
       vmDebugger.debug()
     })
 
+    $("#load").click(function() {
+    //Creates a reset by updating these varaibles. I tried adding a vm.reset() function and updating the debugger and display but this seems to be a quicker fix.
+    display = new Display($("canvas")[0])
+    vm= new VM(display)
+    vmDebugger = new Debugger(vm)
+
+    e = document.getElementById("romSelect")
+    romChoice = e.options[e.selectedIndex].value
+    loadROM(romChoice, function(program) {
+      vm.loadProgram(program)
+      vmDebugger.debug()
+    })
+
+    })
     $("#run").click(function() {
       vm.run()
     })
